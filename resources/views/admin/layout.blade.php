@@ -8,12 +8,7 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="stylesheet" href="/css/admin.css">
 
-    
-    
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
+
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 
@@ -207,7 +202,7 @@
                         <i class="fa fa-dashboard"></i> <span>Админ-панель</span>
                     </a>
                 </li>
-                <li><a href="#"><i class="fa fa-sticky-note-o"></i> <span>Посты</span></a></li>
+                <li><a href="{{ route('posts.index')}}"><i class="fa fa-sticky-note-o"></i> <span>Посты</span></a></li>
                 <li><a href="{{ route('categories.index') }}"><i class="fa fa-list-ul"></i> <span>Категории</span></a></li>
                 <li><a href="{{ route('tags.index') }}"><i class="fa fa-tags"></i> <span>Теги</span></a></li>
                 <li>

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Support\Facades\Storage;
@@ -14,11 +15,11 @@ class Post extends Model
     const IS_DRAFT = 0;
     const  IS_PUBLIC = 1;
 
-    protected $fillable = ['title', 'content'];
+    protected $fillable = ['title', 'content', 'date'];
 
     public function category()
     {
-        return $this->hasOne(Category::class);
+        return $this->belongsTo(Category::class);
 //        теперь я смогу делать такую штуку
 //        $post = Post::find(1);
 //        $post->category()->title - связь с категорией по hasOne
@@ -27,7 +28,7 @@ class Post extends Model
 
     public function author()
     {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function tags()
@@ -54,6 +55,7 @@ class Post extends Model
     {
         $post = new static;
         $post->fill($fields);
+        // TODO: заглушка. поменять
         $post->user_id = 1;
         $post->save();
 
@@ -69,20 +71,26 @@ class Post extends Model
     public function remove()
     {
         // удалить сопутствующие связи
-        Storage::delete('uploads/' . $this->image);
+        $this->removeImage();
         $this->delete();
     }
 
     public function uploadImage($image)
     {
         if ($image == null) { return; }
-        Storage::delete('uploads/' . $this->image);
+        $this->removeImage();
         $filename = str_random(10) . '.' . $image->extension();
-        $image->saveAs('uploads', $filename);
+        $image->storeAs('uploads', $filename);
         $this->image = $filename;
         $this->save();
     }
 
+    public function removeImage()
+    {
+        if ($this->image != null) {
+            Storage::delete('uploads/' . $this->image);
+        }
+    }
     public function getImage()
     {
         if ($this->image == null) {
@@ -147,5 +155,28 @@ class Post extends Model
         }
 
         return $this->setFeatured();
+    }
+
+    public function setDateAttribute($value)
+    {
+        $date = Carbon::createFromFormat('d/m/y', $value)->format('Y-m-d');
+        $this->attributes['date'] = $date;
+
+    }
+
+    public function getCategoryTitle()
+    {
+
+        return ($this->category != null)
+            ? $this->category->title
+            : 'без категории';
+    }
+
+    public function getTagsTitles()
+    {
+        if (!$this->tags->isEmpty()) {
+            return implode(', ', $this->tags->pluck('title')->all());
+        }
+        return 'нет тэгов';
     }
 }
