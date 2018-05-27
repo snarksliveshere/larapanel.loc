@@ -5,6 +5,8 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+use Storage;
+
 class User extends Authenticatable
 {
     use Notifiable;
@@ -66,20 +68,23 @@ class User extends Authenticatable
     public function uploadAvatar($image)
     {
         if ($image == null) { return; }
-        Storage::delete('uploads/' . $this->image);
+//        dd(get_class_methods($image));
+        if ($this->avatar != null) {
+            Storage::delete('uploads/' . $this->avatar);
+        }
         $filename = str_random(10) . '.' . $image->extension();
-        $image->saveAs('uploads', $filename);
-        $this->image = $filename;
+        $image->storeAs('uploads', $filename);
+        $this->avatar = $filename;
         $this->save();
     }
 
     public function getAvatar()
     {
-        if ($this->image == null) {
-            return '/img/no-avatar.png';
+        if ($this->avatar == null) {
+            return '/img/no-avatar.jpg';
         }
 
-        return '/uploads/' . $this->image;
+        return '/uploads/' . $this->avatar;
     }
 
     public function makeAdmin()

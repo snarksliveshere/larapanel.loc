@@ -5,7 +5,7 @@
     <section class="content-header">
         <h1>
             Привет! Это админка
-            <small>приятные слова..</small>
+
         </h1>
     </section>
 
